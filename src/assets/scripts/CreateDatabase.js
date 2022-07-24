@@ -1,12 +1,17 @@
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 import { Asset } from 'expo-asset';
+import * as SQLite from 'expo-sqlite';
 
-const db = require('../assets/front-end-test.db');
+const db = require('../front-end-test.db');
 
 const { DB_NAME } = Constants.manifest.extra.env;
 
 const DB_URI = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
+
+export const DatabaseConnection = {
+  getConnection: () => SQLite.openDatabase("front-end-test.db"),
+};
 
 export default async () => {
   try {
@@ -23,3 +28,5 @@ export default async () => {
     console.log('error', e);
   }
 };
+
+

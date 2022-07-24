@@ -2,8 +2,26 @@ import React from 'react';
 import {
   View, Image, StyleSheet, Text, TouchableOpacity,
 } from 'react-native';
+import * as SQLite from 'expo-sqlite';
 
-const Details = () => (
+
+const Details = ({route}) => {
+  const {item} = route.params;
+  const handleFavorite = () => {
+    const DatabaseConnection = {
+      getConnection: () => SQLite.openDatabase('front-end-test.db'),
+    };
+    const db = DatabaseConnection.getConnection();
+    return new Promise((resolve, reject) =>db.transaction(tx => {
+      tx.executeSql(`update users set favorite = ? where _id = ?;`, [1, item._id], () => {
+        console.log('sucesso', item._id);
+      }), (sqlError) => {
+          console.log(sqlError);
+      }}, (txError) => {
+      console.log(txError);
+  }));
+  }
+  return (
   <View style={styles.container}>
     <View>
       <Image
@@ -16,22 +34,24 @@ const Details = () => (
     <View
       style={styles.detailsContainer}
     >
-      <Text>Nome: Ighor</Text>
-      <Text>E-mail: email@email.com</Text>
-      <Text>Idade: 23</Text>
-      <Text>Salário: 1,767.09</Text>
-      <Text>Latitude: 66.701576</Text>
-      <Text>Longitude: 178.865541</Text>
+      <Text>Nome: {item.name}</Text>
+      <Text>E-mail: {item.email}</Text>
+      <Text>Idade: {item.age}</Text>
+      <Text>Salário: {item.balance}</Text>
+      <Text>Latitude: {item.latitude}</Text>
+      <Text>Longitude: {item.longitude}</Text>
+      <Text>Favorito: {item.favorite}</Text>
     </View>
     <TouchableOpacity
       style={styles.button}
+      onPress={handleFavorite}
     >
       <Text>
         Favorito
       </Text>
     </TouchableOpacity>
   </View>
-);
+)};
 
 const styles = StyleSheet.create({
   container: {
